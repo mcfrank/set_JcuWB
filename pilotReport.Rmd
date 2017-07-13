@@ -105,17 +105,283 @@ The "change" scores reported in the raw data are the same as "post" - "baseline"
 
 ## Step 4: Run analysis
 
-### Pre-processing
-
-[you can remove this section if no pre-processing is required]
-
-```{r}
-```
-
 ### Descriptive statistics
 
-```{r}
+
+```{r reported_descriptives}
+reported_descriptives <- list(
+  self_focus = list(
+    child_change = 
+      list( mean = 0.95, ci_low = 0.38, ci_high = 1.52), 
+    experimenter_change =
+      list( mean = -0.07, ci_low = -0.74, ci_high = 0.59)
+  ),
+  other_focus = list(
+    child_change = 
+      list( mean = 0.17, ci_low = -0.39, ci_high = 0.73), 
+    experimenter_change =
+      list( mean = 0.86, ci_low = 0.2, ci_high = 1.51)
+  ),
+  neutral_focus = list(
+    child_change = 
+      list( mean = 0.89, ci_low = 0.31, ci_high = 1.46), 
+    experimenter_change =
+      list( mean = 0.71, ci_low = 0.04, ci_high = 1.38)
+  ),
+  picture_types = list(
+    self = 
+     list(mean = 0.44, ci_low = -0.04, ci_high = 0.91),
+   other = 
+     list(mean = 0.51, ci_low = 0.04, ci_high = 0.98),
+   neutral = 
+     list(mean = 0.80, ci_low = 0.32, ci_high = 1.28)
+   ),
+  toy_owner = list(
+    child = list(mean = 0.67, ci_low = 0.34, ci_high = 0.99),
+    experimenter = list(mean = 0.5, ci_low = 0.12, ci_high = 0.89)
+  )
+)
 ```
+
+
+
+```{r descriptives_prime_typeXobject}
+df.object.prime_type.summary <- df.tidy %>%
+  spread(scoringPeriod, response) %>%
+  group_by(object, prime_type) %>%
+  summarize(
+    sample_mean = mean(change),
+    sample_sd = sd(change),
+    sample_n = n()
+  ) %>%
+  mutate(
+    error = qt(0.975, df = sample_n - 1) * sample_sd / sqrt(sample_n),
+    ci_low = sample_mean - error,
+    ci_high = sample_mean + error
+  )
+
+#########################
+# Self Focus: Child Object
+#########################
+reportedValues = reported_descriptives$self_focus$child_change
+obtainedValues = filter(df.object.prime_type.summary, object == "child", prime_type == "self")
+## Mean
+compareValues(
+  reportedValues$mean,
+  obtainedValues$sample_mean
+)
+
+## CIs (Note that these be off if the mean is off)
+compareValues(
+  reportedValues$ci_low,
+  obtainedValues$ci_low
+)
+
+compareValues(
+  reportedValues$ci_high,
+  obtainedValues$ci_high
+)
+
+#########################
+# Self Focus: Experimenter Object
+#########################
+reportedValues_self_experimenter = reported_descriptives$self_focus$experimenter_change
+obtainedValues_self_experimenter = filter(df.object.prime_type.summary, 
+                                          object == "experimenter", prime_type == "self")
+## Mean
+compareValues(
+  reportedValues_self_experimenter$mean,
+  obtainedValues_self_experimenter$sample_mean
+)
+
+## CIs (Note that these be off if the mean is off)
+compareValues(
+  reportedValues_self_experimenter$ci_low,
+  obtainedValues_self_experimenter$ci_low
+)
+
+compareValues(
+  reportedValues_self_experimenter$ci_high,
+  obtainedValues_self_experimenter$ci_high
+)
+
+#########################
+# Other Focus: Child Object
+#########################
+reportedValues_other_child = reported_descriptives$other_focus$child_change
+obtainedValues_other_child = filter(df.object.prime_type.summary, 
+                                          object == "child", prime_type == "other")
+## Mean
+compareValues(
+  reportedValues_other_child$mean,
+  obtainedValues_other_child$sample_mean
+)
+
+## CIs (Note that these be off if the mean is off)
+compareValues(
+  reportedValues_other_child$ci_low,
+  obtainedValues_other_child$ci_low
+)
+
+compareValues(
+  reportedValues_other_child$ci_high,
+  obtainedValues_other_child$ci_high
+)
+
+#########################
+# Other Focus: Experimenter Object
+#########################
+reportedValues_other_experimenter = reported_descriptives$other_focus$experimenter_change
+obtainedValues_other_experimenter = filter(df.object.prime_type.summary, 
+                                          object == "experimenter", prime_type == "other")
+## Mean
+compareValues(
+  reportedValues_other_experimenter$mean,
+  obtainedValues_other_experimenter$sample_mean
+)
+
+## CIs (Note that these be off if the mean is off)
+compareValues(
+  reportedValues_other_experimenter$ci_low,
+  obtainedValues_other_experimenter$ci_low
+)
+
+compareValues(
+  reportedValues_other_experimenter$ci_high,
+  obtainedValues_other_experimenter$ci_high
+)
+
+#########################
+# Neutral Focus: Child Object
+#########################
+reportedValues_neutral_child = reported_descriptives$neutral_focus$child_change
+obtainedValues_neutral_child = filter(df.object.prime_type.summary, 
+                                          object == "child", prime_type == "neutral")
+## Mean
+compareValues(
+  reportedValues_neutral_child$mean,
+  obtainedValues_neutral_child$sample_mean
+)
+
+## CIs (Note that these be off if the mean is off)
+compareValues(
+  reportedValues_neutral_child$ci_low,
+  obtainedValues_neutral_child$ci_low
+)
+
+compareValues(
+  reportedValues_neutral_child$ci_high,
+  obtainedValues_neutral_child$ci_high
+)
+
+#########################
+# Neutral Focus: Experimenter Object
+#########################
+reportedValues_neutral_experimenter = reported_descriptives$neutral_focus$experimenter_change
+obtainedValues_neutral_experimenter = filter(df.object.prime_type.summary, 
+                                          object == "experimenter", prime_type == "neutral")
+## Mean
+compareValues(
+  reportedValues_neutral_experimenter$mean,
+  obtainedValues_neutral_experimenter$sample_mean
+)
+
+## CIs (Note that these be off if the mean is off)
+compareValues(
+  reportedValues_neutral_experimenter$ci_low,
+  obtainedValues_neutral_experimenter$ci_low
+)
+
+compareValues(
+  reportedValues_neutral_experimenter$ci_high,
+  obtainedValues_neutral_experimenter$ci_high
+)
+
+```
+
+
+```{r descriptives_prime_type}
+df.object.prime_type.summary <- df.tidy %>%
+  spread(scoringPeriod, response) %>%
+  group_by(prime_type) %>%
+  summarize(
+    sample_mean = mean(change),
+    sample_sd = sd(change),
+    sample_n = n()
+  ) %>%
+  mutate(
+    error = qt(0.975, df = sample_n - 1) * sample_sd / sqrt(sample_n),
+    ci_low = sample_mean - error,
+    ci_high = sample_mean + error
+  )
+
+#########################
+# Self Focus (collapse across objects)
+#########################
+reportedValues_selfPrime = reported_descriptives$picture_types$self
+obtainedValues_selfPrime = filter(df.object.prime_type.summary, prime_type == "self")
+## Mean
+compareValues(
+  reportedValues_selfPrime$mean,
+  obtainedValues_selfPrime$sample_mean
+)
+
+## CIs (Note that these be off if the mean is off)
+compareValues(
+  reportedValues_selfPrime$ci_low,
+  obtainedValues_selfPrime$ci_low
+)
+
+compareValues(
+  reportedValues_selfPrime$ci_high,
+  obtainedValues_selfPrime$ci_high
+)
+
+#########################
+# Other Focus (collapse across objects)
+#########################
+reportedValues_otherPrime = reported_descriptives$picture_types$other
+obtainedValues_otherPrime = filter(df.object.prime_type.summary, prime_type == "other")
+## Mean
+compareValues(
+  reportedValues_otherPrime$mean,
+  obtainedValues_otherPrime$sample_mean
+)
+
+## CIs (Note that these be off if the mean is off)
+compareValues(
+  reportedValues_otherPrime$ci_low,
+  obtainedValues_otherPrime$ci_low
+)
+
+compareValues(
+  reportedValues_otherPrime$ci_high,
+  obtainedValues_otherPrime$ci_high
+)
+
+#########################
+# Neutral Focus (collapse across objects)
+#########################
+reportedValues_neutralPrime = reported_descriptives$picture_types$neutral
+obtainedValues_neutralPrime = filter(df.object.prime_type.summary, prime_type == "neutral")
+## Mean
+compareValues(
+  reportedValues_neutralPrime$mean,
+  obtainedValues_neutralPrime$sample_mean
+)
+
+## CIs (Note that these be off if the mean is off)
+compareValues(
+  reportedValues_neutralPrime$ci_low,
+  obtainedValues_neutralPrime$ci_low
+)
+
+compareValues(
+  reportedValues_neutralPrime$ci_high,
+  obtainedValues_neutralPrime$ci_high
+)
+```
+
 
 ### Inferential statistics
 
