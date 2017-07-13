@@ -575,6 +575,16 @@ No decision errors! It seems like the authors report all their p-values as p = 0
 
 ## Step 5: Conclusion
 
+```{r}
+codReport(Report_Type = 'pilot',
+          Article_ID = 'JcuWB', 
+          Insufficient_Information_Errors = 0,
+          Decision_Errors = 0, 
+          Major_Numerical_Errors = 23, 
+          Minor_Numerical_Errors = 6)
+```
+
+
 Overall, I think this was a successful replication. The data set has informative labels (though not the best structure for re-analysis, e.g., the "endowment_baseline" applies to both the experimenter_object and the child_object -- which is reported in the paper to be the same -- but to analyze the data, you need to duplicate that column). The vast majority of my exact numerical calculations are off from the authors by varying degrees. This may be because there is a subject that should be excluded, or a small error in my pipeline. 
 
 I also am a little unclear on their reporting of their main ANCOVA. From their text, it seems like normalized age is a covariate (not a factor), but then they report an effect of age. I'm not a ANOVA expert, but when I run the `ezAnova` as I think makes sense, there is no estimate for age effect. So I'm not sure if I'm going wrong somewhere with that. 
