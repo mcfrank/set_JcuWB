@@ -314,9 +314,11 @@ compareValues(
 
 ```
 
+Overall, my calculations seem to just be slightly off of theirs, but consistently off. Perhaps a subject was excluded that I'm not aware of? (I re-read the relevant text a couple of times, so I'm not sure that's the case). 
+
 
 ```{r descriptives_prime_type}
-df.object.prime_type.summary <- df.tidy %>%
+df.prime_type.summary <- df.tidy %>%
   spread(scoringPeriod, response) %>%
   group_by(prime_type) %>%
   summarize(
@@ -334,7 +336,7 @@ df.object.prime_type.summary <- df.tidy %>%
 # Self Focus (collapse across objects)
 #########################
 reportedValues_selfPrime = reported_descriptives$picture_types$self
-obtainedValues_selfPrime = filter(df.object.prime_type.summary, prime_type == "self")
+obtainedValues_selfPrime = filter(df.prime_type.summary, prime_type == "self")
 ## Mean
 compareValues(
   reportedValues_selfPrime$mean,
@@ -356,7 +358,7 @@ compareValues(
 # Other Focus (collapse across objects)
 #########################
 reportedValues_otherPrime = reported_descriptives$picture_types$other
-obtainedValues_otherPrime = filter(df.object.prime_type.summary, prime_type == "other")
+obtainedValues_otherPrime = filter(df.prime_type.summary, prime_type == "other")
 ## Mean
 compareValues(
   reportedValues_otherPrime$mean,
@@ -378,7 +380,7 @@ compareValues(
 # Neutral Focus (collapse across objects)
 #########################
 reportedValues_neutralPrime = reported_descriptives$picture_types$neutral
-obtainedValues_neutralPrime = filter(df.object.prime_type.summary, prime_type == "neutral")
+obtainedValues_neutralPrime = filter(df.prime_type.summary, prime_type == "neutral")
 ## Mean
 compareValues(
   reportedValues_neutralPrime$mean,
@@ -398,36 +400,186 @@ compareValues(
 ```
 
 
+### Figure 2 in paper
+
+Error bars here denote 95% CIs
+
+```{r figure2}
+df.object.prime_type.summary %>%
+  filter(object != "neutral") %>%
+  mutate(prime_type = factor(prime_type, levels = c("self", "other", "neutral"),
+                             labels = c("self", "other", "farm"))) %>%
+  ggplot(., aes( x = prime_type, fill = object, group = object,
+                 y = sample_mean, ymin = ci_low, ymax = ci_high))+
+  geom_col(position = position_dodge(0.7), width = 0.7, color = 'black')+
+  geom_errorbar(position = position_dodge(0.7), width = 0.5)+
+  ylab("Mean Value Change Score")+
+  xlab("Picture Focus")
+```
+
+
+
+
+
 ### Inferential statistics
 
-> To examine the effects of priming on value-change for the two identical endowment toys, a mixed ANCOVA was conducted. Toy owner (child or experimenter) was entered as a repeated measures factor and picture type (self-focus, other- focus, neutral-focus) and gender were entered as a between sub- jects factors. Additionally, child age was normalized and entered as a covariate into the model.
+
 
 Main results (Section 2.3):
 
 > We found a significant interaction between picture construction condition and toy owner (F(2, 53) = 4.83, p = 0.01, View the MathML source).
+> We found a significant interaction between picture construction condition and toy owner (F(2, 53) = 4.83, p = 0.01, View the MathML source). Specifically, following self-focus, children increased the value of their own toy (M = 0.95, 95% CI = [0.38, 1.52]) but not the experimenter’s toy (M = −0.07, 95% CI = [−0.74, 0.59], t(19) = 3.56, p = 0.01, d = 0.81, Bonferroni corrected). The opposite pattern of responses were observed in the other-focus condition, in which children valued the experimenter’s toy higher (M = 0.86, 95% CI = [0.20, 1.51]), but not their own toy (M = 0.17, 95% CI = [−0.39, 0.73]) - although this effect was not statistically significant (t(19) = −1.61, p = 0.36, d = 0.48, Bonferroni corrected). There was no significant effect of toy owner in the neutral-focus condition (Mchild = 0.89, 95% CIchild = [0.31, 1.46], Mexperimenter = 0.71, 95% CIexperimenter = [0.04, 1.38], t(19) = 0.48, p = 0.64, d = 0.13). The mean value change scores for each condition as a function of toy owner are presented in Fig. 2. We found no significant main effects of types of picture type (Mself = 0.44, 95% CIself = [−0.04, 0.91], Mother = 0.51, 95% CIother = [0.04, 0.98], Mneutral = 0.80, 95% CIneutral = [0.32, 1.28], F(2, 53) = 0.61, p = 0.55, View the MathML source) or toy owner (Mchild = 0.67, 95% CIchild = [0.34, 0.99], Mexperimenter = 0.50, 95% CIexperimenter = [0.12, 0.89], F(1, 53) = 0.55, p = 0.46, View the MathML source). A significant effect of age was observed (F(1, 53) = 7.68, p = 0.01, View the MathML source), indicating that older children increased their valuations more than younger children regardless of toy owner or picture condition. No significant effect of gender (F(1, 53) = 0.46, p = 0.50, View the MathML source), and no significant interactions involving gender or age were observed (Fs < 2.69, ps > 0.11, etc.).
 
-```{r}
-ezANOVA(
+
+```{r fstatistics}
+
+reported_inferentials <- list(
+  anova = list(
+    interaction = list(dfn = 2, dfd = 53, f = 4.83, p = 0.01),
+    age = list(dfn = 1, dfd = 53, f = 7.68, p = 0.01),
+    gender = list(dfn = 1, dfd = 53, f = 0.46, p = 0.50)
+  ),
+  ts = list(
+    self_focus_child_experimenter = list(df = 19, t = 3.56, p = 0.01),
+    other_focus_child_experimenter = list(df = 19, t = -1.61, p = 0.36),
+    neutral_focus_child_experimenter = list(df = 19, t = 0.48, p = 0.64)
+  )
+)
+
+
+# > To examine the effects of priming on value-change for the two identical endowment toys, a mixed ANCOVA was conducted. Toy owner (child or experimenter) was entered as a repeated measures factor and picture type (self-focus, other- focus, neutral-focus) and gender were entered as a between sub- jects factors. Additionally, child age was normalized and entered as a covariate into the model.
+
+anova.rs <- ezANOVA(
   df.tidy %>%
-    filter(scoringPeriod == "change", object != "neutral"),
+    filter(scoringPeriod == "change", object != "neutral") %>%
+    mutate(gender = factor(gender)),
   dv = response,
   wid = participant_id,
   within = .(object),
   between = .(prime_type, gender),
-  between_covariates = age_normalized
+  between_covariates = age_normalized,
+  detailed = T, return_aov = T
+)
+
+reportedValues_ownerPrimeInteraction = reported_inferentials$anova$interaction
+obtainedValues_neutralPrimeInteraction = filter(anova.rs$ANOVA, Effect == "prime_type:object")
+
+## df numerator
+compareValues(
+  reportedValues_ownerPrimeInteraction$dfn,
+  obtainedValues_neutralPrimeInteraction$DFn
+)
+
+## df denominator
+compareValues(
+  reportedValues_ownerPrimeInteraction$dfd,
+  obtainedValues_neutralPrimeInteraction$DFd
 )
 
 
+## F stat
+compareValues(
+  reportedValues_ownerPrimeInteraction$f,
+  obtainedValues_neutralPrimeInteraction$F
+)
+
+## p-value
+compareValues(
+  reportedValues_ownerPrimeInteraction$p,
+  obtainedValues_neutralPrimeInteraction$p, 
+  isP = T
+)
 ``` 
+
+Main ANOVA results replicate, though numbers are off a bit.
+
+
+```{r tstatistics}
+
+reportedValues_ts = reported_inferentials$ts
+
+obtainedValues_selfFocus = with(df.tidy %>%
+    filter(scoringPeriod == "change", object != "neutral", prime_type == "self") %>% 
+      spread(object, response), 
+    t.test(child, experimenter, paired = T))
+
+obtainedValues_otherFocus = with(df.tidy %>%
+    filter(scoringPeriod == "change", object != "neutral", prime_type == "other") %>% 
+      spread(object, response), 
+    t.test(child, experimenter, paired = T))
+
+obtainedValues_neutralFocus = with(df.tidy %>%
+    filter(scoringPeriod == "change", object != "neutral", prime_type == "neutral") %>% 
+      spread(object, response), 
+    t.test(child, experimenter, paired = T))
+
+
+## T-TEST
+### self-focus
+
+compareValues(
+  reportedValues_ts$self_focus_child_experimenter$df,
+  obtainedValues_selfFocus$parameter
+)
+
+
+compareValues(
+  reportedValues_ts$self_focus_child_experimenter$t,
+  obtainedValues_selfFocus$statistic
+)
+
+compareValues(
+  reportedValues_ts$self_focus_child_experimenter$p,
+  obtainedValues_selfFocus$p.value, isP = T
+)
+
+### other-focus
+
+compareValues(
+  reportedValues_ts$other_focus_child_experimenter$df,
+  obtainedValues_otherFocus$parameter
+)
+
+
+compareValues(
+  reportedValues_ts$other_focus_child_experimenter$t,
+  obtainedValues_otherFocus$statistic
+)
+
+compareValues(
+  reportedValues_ts$other_focus_child_experimenter$p,
+  obtainedValues_otherFocus$p.value, isP = T
+)
+
+### neutral-focus
+
+compareValues(
+  reportedValues_ts$neutral_focus_child_experimenter$df,
+  obtainedValues_neutralFocus$parameter
+)
+
+
+compareValues(
+  reportedValues_ts$neutral_focus_child_experimenter$t,
+  obtainedValues_neutralFocus$statistic
+)
+
+compareValues(
+  reportedValues_ts$neutral_focus_child_experimenter$p,
+  obtainedValues_neutralFocus$p.value, isP = T
+)
+
+```
+
+No decision errors! It seems like the authors report all their p-values as p = 0.01 (when in fact they are < 0.01)
 
 ## Step 5: Conclusion
 
-```{r}
-```
+Overall, I think this was a successful replication. The data set has informative labels (though not the best structure for re-analysis, e.g., the "endowment_baseline" applies to both the experimenter_object and the child_object -- which is reported in the paper to be the same -- but to analyze the data, you need to duplicate that column). The vast majority of my exact numerical calculations are off from the authors by varying degrees. This may be because there is a subject that should be excluded, or a small error in my pipeline. 
 
-[Please also include a brief text summary describing your findings. If this reproducibility check was a failure, you should note any suggestions as to what you think the likely cause(s) might be.]
+I also am a little unclear on their reporting of their main ANCOVA. From their text, it seems like normalized age is a covariate (not a factor), but then they report an effect of age. I'm not a ANOVA expert, but when I run the `ezAnova` as I think makes sense, there is no estimate for age effect. So I'm not sure if I'm going wrong somewhere with that. 
 
-[This function will output information about the package versions used in this report:]
+23 major numerical errors, but somehow, no decision errors.
 
 ```{r session_info, include=TRUE, echo=TRUE, results='markup'}
 devtools::session_info()

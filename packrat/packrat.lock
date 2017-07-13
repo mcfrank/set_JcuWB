@@ -12,7 +12,7 @@ Package: CODreports
 Source: github
 Version: 0.1
 Hash: e237eaabba68b1216e508f5375193178
-Requires: readxl, devtools, haven, knitr, tidyverse
+Requires: devtools, haven, knitr, readxl, tidyverse
 GithubRepo: CODreports
 GithubUsername: CognitionOpenDataProject
 GithubRef: master
@@ -25,8 +25,8 @@ Hash: 4aef5bda70897c1663d5b8bae2f4419a
 
 Package: R6
 Source: CRAN
-Version: 2.2.0
-Hash: 712773a3439bd32db5c40938e1a9aac2
+Version: 2.2.2
+Hash: b2366cd9d2f3851a5704b4e192b985c2
 
 Package: RColorBrewer
 Source: CRAN
@@ -35,8 +35,8 @@ Hash: c0d56cd15034f395874c870141870c25
 
 Package: Rcpp
 Source: CRAN
-Version: 0.12.10
-Hash: 6cf65d0dd6a92f2d43c8d4805d33efe9
+Version: 0.12.11
+Hash: 2ee22f3b5e75dec80b1d8eca61cd96d8
 
 Package: assertthat
 Source: CRAN
@@ -62,7 +62,7 @@ Package: broom
 Source: CRAN
 Version: 0.4.2
 Hash: 7ebcffa46afb467e3f3c5687946f6e1a
-Requires: plyr, psych, stringr, dplyr, reshape2, tidyr
+Requires: dplyr, plyr, psych, reshape2, stringr, tidyr
 
 Package: caTools
 Source: CRAN
@@ -82,10 +82,10 @@ Hash: 18525896a11a4e04268c762f6391a8f8
 
 Package: devtools
 Source: CRAN
-Version: 1.12.0
-Hash: bbad95109ae75cbb14099281cda43af2
-Requires: digest, git2r, jsonlite, rstudioapi, whisker, withr, memoise,
-    httr
+Version: 1.13.2
+Hash: 1bcfefa7d2fad3f1a2f5367c9ceccd46
+Requires: digest, git2r, httr, jsonlite, memoise, rstudioapi, whisker,
+    withr
 
 Package: dichromat
 Source: CRAN
@@ -100,13 +100,13 @@ Hash: e53fb8c58673df868183697e39a6a4d6
 Package: dplyr
 Source: CRAN
 Version: 0.5.0
-Hash: 673660fd0b947477dab1044abc8b2c95
+Hash: 09fc57f582c74ffa20a57e0a48b27150
 Requires: BH, DBI, R6, Rcpp, assertthat, lazyeval, magrittr, tibble
 
 Package: evaluate
 Source: CRAN
-Version: 0.10
-Hash: c3601a10c987d439e0c63ec635234a76
+Version: 0.10.1
+Hash: 54d95f4ec6d0300100413ed0127d89ae
 Requires: stringr
 
 Package: forcats
@@ -124,7 +124,7 @@ Package: ggplot2
 Source: CRAN
 Version: 2.2.1
 Hash: 46e5cb78836848aa44655e577433f54b
-Requires: digest, gtable, lazyeval, plyr, tibble, scales, reshape2
+Requires: digest, gtable, lazyeval, plyr, reshape2, scales, tibble
 
 Package: git2r
 Source: CRAN
@@ -138,9 +138,9 @@ Hash: cd78381a9d3fea966ac39bd0daaf5554
 
 Package: haven
 Source: CRAN
-Version: 1.0.0
-Hash: c0a627663eb2abb6172350fa8c4f1167
-Requires: BH, Rcpp, hms, tibble, readr
+Version: 1.1.0
+Hash: 559f833736a48b26cf589bed2ab247b5
+Requires: Rcpp, forcats, hms, readr, tibble
 
 Package: highr
 Source: CRAN
@@ -155,7 +155,7 @@ Hash: 3fca8a1c97e6cfb297fe3f4690f82c58
 Package: htmltools
 Source: CRAN
 Version: 0.3.5
-Hash: 3411e0671a44177109dc1a9e4a6bd2a4
+Hash: 5dd7040bde97042b6ff6ca9f224bdcc9
 Requires: Rcpp, digest
 
 Package: httr
@@ -166,14 +166,14 @@ Requires: R6, curl, jsonlite, mime, openssl
 
 Package: jsonlite
 Source: CRAN
-Version: 1.4
-Hash: 24cc0ffeb1771d710173d9803a131870
+Version: 1.5
+Hash: 9c51936d8dd00b2f1d4fe9d10499694c
 
 Package: knitr
 Source: CRAN
-Version: 1.15.1
-Hash: eed7437e2b614c9e3923b7932b16ac97
-Requires: digest, highr, yaml, markdown, stringr, evaluate
+Version: 1.16
+Hash: 3b8dc00d51027c6d041d56bc92136452
+Requires: digest, evaluate, highr, markdown, stringr, yaml
 
 Package: labeling
 Source: CRAN
@@ -198,14 +198,14 @@ Hash: bdc4d48c3135e8f3b399536ddf160df4
 
 Package: markdown
 Source: CRAN
-Version: 0.7.7
-Hash: fea2343a1119d61b0cc5c0a950d103a3
+Version: 0.8
+Hash: 045d7c594d503b41f1c28946d076c8aa
 Requires: mime
 
 Package: memoise
 Source: CRAN
-Version: 1.0.0
-Hash: 56e7087c3559eb7ba72a9afb349bf896
+Version: 1.1.0
+Hash: 410fcd334bc626db100237cc1370f2e9
 Requires: digest
 
 Package: mime
@@ -222,7 +222,7 @@ Package: modelr
 Source: CRAN
 Version: 0.1.0
 Hash: 7c9848bf4d734f38b8ce91022d8de949
-Requires: lazyeval, magrittr, tibble, dplyr, purrr, tidyr, broom
+Requires: broom, dplyr, lazyeval, magrittr, purrr, tibble, tidyr
 
 Package: munsell
 Source: CRAN
@@ -243,7 +243,7 @@ Hash: 6ad605ba7b4b476d84be6632393f5765
 Package: plyr
 Source: CRAN
 Version: 1.8.4
-Hash: c9ddbdcfd74ff964e3e7d0b692a8dd70
+Hash: ec0683cf0ab5494db2eff1f31591624e
 Requires: Rcpp
 
 Package: psych
@@ -255,26 +255,31 @@ Requires: mnormt
 Package: purrr
 Source: CRAN
 Version: 0.2.2
-Hash: 9f218b40dee7fe7f942039f974bd98b8
-Requires: BH, Rcpp, lazyeval, magrittr, dplyr
+Hash: 0d1961f54c2ec42e02025bd56ac59448
+Requires: BH, Rcpp, dplyr, lazyeval, magrittr
 
 Package: readr
 Source: CRAN
-Version: 1.1.0
-Hash: 3506086f41d307f5a78ee64e010536fa
+Version: 1.1.1
+Hash: 36bb0e1dc92b38dc4ebf419fdfa5cc7f
 Requires: BH, R6, Rcpp, hms, tibble
 
 Package: readxl
 Source: CRAN
 Version: 0.1.1
-Hash: 29d41207f0536a41545dfe6fad3f941c
+Hash: 6b8ba4ec18d4ac9a505dd799e378eafa
 Requires: Rcpp
 
 Package: reshape2
 Source: CRAN
 Version: 1.4.2
-Hash: 790c06c11c84041b814139d731a872b9
+Hash: 01fa9a6b3ead377e4fac84af9f982df9
 Requires: Rcpp, plyr, stringr
+
+Package: rlang
+Source: CRAN
+Version: 0.1.1
+Hash: 86c53487ce7f82f0a7cc11c816060910
 
 Package: rmarkdown
 Source: CRAN
@@ -298,13 +303,13 @@ Package: rvest
 Source: CRAN
 Version: 0.3.2
 Hash: c69f7526520bad66fd2111ebe8b1364b
-Requires: magrittr, xml2, httr, selectr
+Requires: httr, magrittr, selectr, xml2
 
 Package: scales
 Source: CRAN
 Version: 0.4.1
-Hash: 2d008b6e3fb9938255669ddf3c85f1f3
-Requires: RColorBrewer, Rcpp, dichromat, labeling, plyr, munsell
+Hash: 6368a3249d52d20b366191e9349690b6
+Requires: RColorBrewer, Rcpp, dichromat, labeling, munsell, plyr
 
 Package: selectr
 Source: CRAN
@@ -325,23 +330,23 @@ Requires: magrittr, stringi
 
 Package: tibble
 Source: CRAN
-Version: 1.3.0
-Hash: 8de64ed3345488e66b676875ed1ebdce
-Requires: Rcpp, lazyeval
+Version: 1.3.3
+Hash: cff4362530fb71e27b84a02054bcb315
+Requires: Rcpp, rlang
 
 Package: tidyr
 Source: CRAN
 Version: 0.6.1
-Hash: 18d0eb5251ee17447cb84df1a7f010b2
-Requires: Rcpp, lazyeval, magrittr, stringi, tibble, dplyr
+Hash: eac0336feb33c899f7d02b30bdee41d1
+Requires: Rcpp, dplyr, lazyeval, magrittr, stringi, tibble
 
 Package: tidyverse
 Source: CRAN
 Version: 1.1.1
 Hash: 72d5fada870c90b835bbdfc281283c99
-Requires: hms, jsonlite, magrittr, readxl, xml2, tibble, httr, stringr,
-    dplyr, forcats, readr, lubridate, purrr, tidyr, haven, ggplot2,
-    rvest, broom, modelr
+Requires: broom, dplyr, forcats, ggplot2, haven, hms, httr, jsonlite,
+    lubridate, magrittr, modelr, purrr, readr, readxl, rvest, stringr,
+    tibble, tidyr, xml2
 
 Package: whisker
 Source: CRAN
@@ -356,7 +361,7 @@ Hash: 774eb7be9087cdc24b53b74e5359cfac
 Package: xml2
 Source: CRAN
 Version: 1.1.1
-Hash: 19ad10ef8e73cb435eb49f9d5d259980
+Hash: 35dbee121bb8d76347677290ba1c6a06
 Requires: BH, Rcpp
 
 Package: yaml
