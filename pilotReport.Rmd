@@ -48,6 +48,7 @@ library(knitr) # for kable table formating
 #library(haven) # import and export 'SPSS', 'Stata' and 'SAS' Files
 library(readxl) # import excel files
 library(CODreports) # custom report functions
+library(ez)
 
 to.n <- function(fctr){
   return(as.numeric(as.character(fctr)))
@@ -75,9 +76,13 @@ This data frame has 18 variables:
 df.tidy <- df %>% filter(study == 1) %>%
   separate(prime_time, into =c('min', 'sec'), sep = "min") %>%
   select(-unowned_post, -unowned_change) %>% # not used in expt 1
+  separate(age, into = c("year", "month"), sep = "y") %>%
   mutate(sec = gsub("sec", "", sec),
          sec = as.numeric(sec),
          min = as.numeric(min),
+         month = as.numeric(gsub("m", "", month)),
+         year = as.numeric(year),
+         age_in_months = year*12 + month,
          prime_time_seconds = min*60 + sec,
          neutral_baseline = to.n(neutral_baseline),
          experimenter_post = to.n(experimenter_post),
@@ -101,6 +106,16 @@ df.tidy %>%
   summarize(totalDeviation = sum(diff))
 ```
 The "change" scores reported in the raw data are the same as "post" - "baseline". Good.
+
+## Step 3: Preprocessing
+
+For ANCOVA, age is normalized
+```{r}
+mean_age = mean(df.tidy$age_in_months)
+sd_age = sd(df.tidy$age_in_months)
+df.tidy <- df.tidy %>% 
+  mutate(age_normalized = (age_in_months - mean_age) / sd_age)
+```
 
 
 ## Step 4: Run analysis
@@ -385,8 +400,25 @@ compareValues(
 
 ### Inferential statistics
 
+> To examine the effects of priming on value-change for the two identical endowment toys, a mixed ANCOVA was conducted. Toy owner (child or experimenter) was entered as a repeated measures factor and picture type (self-focus, other- focus, neutral-focus) and gender were entered as a between sub- jects factors. Additionally, child age was normalized and entered as a covariate into the model.
+
+Main results (Section 2.3):
+
+> We found a significant interaction between picture construction condition and toy owner (F(2, 53) = 4.83, p = 0.01, View the MathML source).
+
 ```{r}
-```
+ezANOVA(
+  df.tidy %>%
+    filter(scoringPeriod == "change", object != "neutral"),
+  dv = response,
+  wid = participant_id,
+  within = .(object),
+  between = .(prime_type, gender),
+  between_covariates = age_normalized
+)
+
+
+``` 
 
 ## Step 5: Conclusion
 
