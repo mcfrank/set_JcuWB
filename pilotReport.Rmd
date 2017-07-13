@@ -15,16 +15,26 @@ output:
 -------
 
 #### Methods summary: 
-[Write a brief summary of the methods underlying the target outcomes written in your own words]
+The authors are interested in the "endowment effect" in three-to-four-year-olds.
+Specifically, they examine the change in subject valuation (herafter, "value change") of two identical objects which differ in their owner (child vs. experimenter).
+They predict an interaction of object-owner with a priming manipulation which focuses the child on her/hisself (vs. focusing on others vs. neural control).
+When children are given a distractor task (between the two valuations) that makes them focus on themselves (by drawing a picture of themselves), they will display a greater endowement effect.
 
 ------
 
 #### Target outcomes: 
-[Insert the target outcomes identified in targetOutcomes.md]  
+
+Information about the statistical model (Section 2.2.1):
+
+> To examine the effects of priming on value-change for the two identical endowment toys, a mixed ANCOVA was conducted. Toy owner (child or experimenter) was entered as a repeated measures factor and picture type (self-focus, other- focus, neutral-focus) and gender were entered as a between sub- jects factors. Additionally, child age was normalized and entered as a covariate into the model.
+
+Main results (Section 2.3):
+
+> We found a significant interaction between picture construction condition and toy owner (F(2, 53) = 4.83, p = 0.01, View the MathML source). Specifically, following self-focus, children increased the value of their own toy (M = 0.95, 95% CI = [0.38, 1.52]) but not the experimenter’s toy (M = −0.07, 95% CI = [−0.74, 0.59], t(19) = 3.56, p = 0.01, d = 0.81, Bonferroni corrected). The opposite pattern of responses were observed in the other-focus condition, in which children valued the experimenter’s toy higher (M = 0.86, 95% CI = [0.20, 1.51]), but not their own toy (M = 0.17, 95% CI = [−0.39, 0.73]) - although this effect was not statistically significant (t(19) = −1.61, p = 0.36, d = 0.48, Bonferroni corrected). There was no significant effect of toy owner in the neutral-focus condition (Mchild = 0.89, 95% CIchild = [0.31, 1.46], Mexperimenter = 0.71, 95% CIexperimenter = [0.04, 1.38], t(19) = 0.48, p = 0.64, d = 0.13). The mean value change scores for each condition as a function of toy owner are presented in Fig. 2. We found no significant main effects of types of picture type (Mself = 0.44, 95% CIself = [−0.04, 0.91], Mother = 0.51, 95% CIother = [0.04, 0.98], Mneutral = 0.80, 95% CIneutral = [0.32, 1.28], F(2, 53) = 0.61, p = 0.55, View the MathML source) or toy owner (Mchild = 0.67, 95% CIchild = [0.34, 0.99], Mexperimenter = 0.50, 95% CIexperimenter = [0.12, 0.89], F(1, 53) = 0.55, p = 0.46, View the MathML source). A significant effect of age was observed (F(1, 53) = 7.68, p = 0.01, View the MathML source), indicating that older children increased their valuations more than younger children regardless of toy owner or picture condition. No significant effect of gender (F(1, 53) = 0.46, p = 0.50, View the MathML source), and no significant interactions involving gender or age were observed (Fs < 2.69, ps > 0.11, etc.).
+
+
 
 ------
-
-[The chunk below sets up some formatting options for the R Markdown document]
 
 ```{r global_options, include=FALSE}
 knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)
@@ -32,14 +42,16 @@ knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)
 
 ## Step 1: Load packages
 
-[Some useful packages are being loaded below. You can add any additional ones you might need too.]
-
 ```{r}
 library(tidyverse) # for data munging
 library(knitr) # for kable table formating
-library(haven) # import and export 'SPSS', 'Stata' and 'SAS' Files
+#library(haven) # import and export 'SPSS', 'Stata' and 'SAS' Files
 library(readxl) # import excel files
 library(CODreports) # custom report functions
+
+to.n <- function(fctr){
+  return(as.numeric(as.character(fctr)))
+}
 ```
 
 ## Step 2: Load data
@@ -48,16 +60,48 @@ library(CODreports) # custom report functions
 df <- read.csv("data/data.csv")
 ```
 
+This data frame has 18 variables: 
+- participant ID, gender, age, experiment #, prime_type (manipulation), 
+- baseline scores for the endowment object(s) (reported in text to be the same for the identical objects for all children), neutral objects, 
+- post scores for the endowment object given to the child, experimenter, and for the neutral object
+- prime_time is the amount of time spent on the priming / distractor task
+- pronouns is number of pronouns of either second person (You, for self-priming) and third person (They, for other priming) in their respective conditions
+- I'm not sure what "swap" is
+- change scores (post - baseline)
+
 ## Step 3: Tidy data
 
 ```{r}
-df %>% filter(study == 1) %>%
+df.tidy <- df %>% filter(study == 1) %>%
   separate(prime_time, into =c('min', 'sec'), sep = "min") %>%
+  select(-unowned_post, -unowned_change) %>% # not used in expt 1
   mutate(sec = gsub("sec", "", sec),
          sec = as.numeric(sec),
          min = as.numeric(min),
-         prime_time_seconds = min*60 + sec)
+         prime_time_seconds = min*60 + sec,
+         neutral_baseline = to.n(neutral_baseline),
+         experimenter_post = to.n(experimenter_post),
+         neutral_post = to.n(neutral_post),
+         experimenter_change = to.n(experimenter_change),
+         neutral_change = to.n(neutral_change),
+         child_baseline = endowment_baseline, # since endowment baseline is the same for both what will become the child's and the experimenter's toys, i create new variables representing this
+         experimenter_baseline = endowment_baseline) %>%
+  select(-endowment_baseline) %>%
+  gather(object, response, ends_with("_baseline"), ends_with("_post"), ends_with("_change")) %>%
+  separate(object, into = c("object", "scoringPeriod"))
 ```
+
+Check the "raw" change scores by subtracting baseline from post
+
+```{r}
+df.tidy %>%
+  spread(scoringPeriod, response) %>%
+  mutate(derivedChange = post - baseline,
+         diff = change - derivedChange) %>%
+  summarize(totalDeviation = sum(diff))
+```
+The "change" scores reported in the raw data are the same as "post" - "baseline". Good.
+
 
 ## Step 4: Run analysis
 
