@@ -59,7 +59,7 @@ to.n <- function(fctr){
 ## Step 2: Load data
 
 ```{r}
-df <- read.csv("data/data.csv")
+df <- read_csv("data/data.csv")
 ```
 
 This data frame has 18 variables: 
@@ -71,10 +71,15 @@ This data frame has 18 variables:
 - I'm not sure what "swap" is
 - change scores (post - baseline)
 
+```{r}
+df
+```
+
 ## Step 3: Tidy data
 
 ```{r}
-df.tidy <- df %>% filter(study == 1) %>%
+df.tidy <- df %>% 
+  filter(study == 1) %>%
   separate(prime_time, into =c('min', 'sec'), sep = "min") %>%
   select(-unowned_post, -unowned_change) %>% # not used in expt 1
   separate(age, into = c("year", "month"), sep = "y") %>%
@@ -95,8 +100,9 @@ df.tidy <- df %>% filter(study == 1) %>%
          child_baseline = endowment_baseline, # since endowment baseline is the same for both what will become the child's and the experimenter's toys, i create new variables representing this
          experimenter_baseline = endowment_baseline) %>%
   select(-endowment_baseline) %>%
-  gather(object, response, ends_with("_baseline"), ends_with("_post"), ends_with("_change")) %>%
-  separate(object, into = c("object", "scoringPeriod"))
+  gather(owner, response, ends_with("_baseline"), 
+         ends_with("_post"), ends_with("_change")) %>%
+  separate(owner, into = c("owner", "scoringPeriod"))
 ```
 
 Check the "raw" change scores by subtracting baseline from post
@@ -108,11 +114,23 @@ df.tidy %>%
          diff = change - derivedChange) %>%
   summarize(totalDeviation = sum(diff))
 ```
+
 The "change" scores reported in the raw data are the same as "post" - "baseline". Good.
+
+### Sanity checks on subject inclusion
+
+There should be 60 participants, and there are. 
+
+```{r}
+length(unique(df.tidy$participant_id))
+```
+
+
 
 ## Step 3: Preprocessing
 
 For ANCOVA, age is normalized
+
 ```{r}
 mean_age = mean(df.tidy$age_in_months)
 sd_age = sd(df.tidy$age_in_months)
@@ -122,6 +140,62 @@ df.tidy <- df.tidy %>%
 
 
 ## Step 4: Run analysis
+
+> We found a significant interaction between picture construction condition and toy owner (F(2, 53) = 4.83, p = 0.01, View the MathML source). 
+
+```{r}
+anova_data <- df.tidy %>%
+    filter(scoringPeriod == "change", 
+      owner != "neutral") %>%
+    mutate(gender = factor(gender))
+
+anova.rs <- ezANOVA(anova_data,
+  dv = response,
+  wid = participant_id,
+  within = .(owner),
+  between = .(prime_type, gender),
+  between_covariates = age_normalized,
+  detailed = T, return_aov = T
+)
+
+print(anova.rs)
+```
+
+
+
+> Specifically, following self-focus, children increased the value of their own toy (M = 0.95, 95% CI = [0.38, 1.52]) but not the experimenter’s toy (M = −0.07, 95% CI = [−0.74, 0.59], t(19) = 3.56, p = 0.01, d = 0.81, Bonferroni corrected). 
+
+```{r}
+mean(df.tidy$response[df.tidy$prime_type == "self" & 
+                          df.tidy$owner == "child" & 
+                          df.tidy$scoringPeriod == "change"])
+
+mean(df.tidy$response[df.tidy$prime_type == "self" & 
+                          df.tidy$owner == "experimenter" & 
+                          df.tidy$scoringPeriod == "change"])
+```
+
+
+
+```{r}
+t.test(df.tidy$response[df.tidy$prime_type == "self" & 
+                          df.tidy$owner == "child" & 
+                          df.tidy$scoringPeriod == "change"], 
+       df.tidy$response[df.tidy$prime_type == "self" & 
+                          df.tidy$owner == "experimenter" & 
+                          df.tidy$scoringPeriod == "change"], paired = TRUE)
+```
+
+
+> The opposite pattern of responses were observed in the other-focus condition, in which children valued the experimenter’s toy higher (M = 0.86, 95% CI = [0.20, 1.51]), but not their own toy (M = 0.17, 95% CI = [−0.39, 0.73]) - although this effect was not statistically significant (t(19) = −1.61, p = 0.36, d = 0.48, Bonferroni corrected). 
+
+
+
+
+There was no significant effect of toy owner in the neutral-focus condition (Mchild = 0.89, 95% CIchild = [0.31, 1.46], Mexperimenter = 0.71, 95% CIexperimenter = [0.04, 1.38], t(19) = 0.48, p = 0.64, d = 0.13). The mean value change scores for each condition as a function of toy owner are presented in Fig. 2. We found no significant main effects of types of picture type (Mself = 0.44, 95% CIself = [−0.04, 0.91], Mother = 0.51, 95% CIother = [0.04, 0.98], Mneutral = 0.80, 95% CIneutral = [0.32, 1.28], F(2, 53) = 0.61, p = 0.55, View the MathML source) or toy owner (Mchild = 0.67, 95% CIchild = [0.34, 0.99], Mexperimenter = 0.50, 95% CIexperimenter = [0.12, 0.89], F(1, 53) = 0.55, p = 0.46, View the MathML source). A significant effect of age was observed (F(1, 53) = 7.68, p = 0.01, View the MathML source), indicating that older children increased their valuations more than younger children regardless of toy owner or picture condition. No significant effect of gender (F(1, 53) = 0.46, p = 0.50, View the MathML source), and no significant interactions involving gender or age were observed (Fs < 2.69, ps > 0.11, etc.).
+
+
+
 
 ### Descriptive statistics
 
@@ -177,7 +251,15 @@ df.object.prime_type.summary <- df.tidy %>%
     ci_low = sample_mean - error,
     ci_high = sample_mean + error
   )
+```
 
+```{r}
+df.object.prime_type.summary
+```
+
+
+
+```{r}
 #########################
 # Self Focus: Child Object
 #########################
@@ -321,7 +403,11 @@ Overall, my calculations seem to just be slightly off of theirs, but consistentl
 
 All of the cell means seem to be off (which throws off the CIs). As a sanity check, run a mean calculation on the un-tidyverse-ed data
 ```{r}
-df %>% group_by(prime_type) %>% summarise(mean=mean(to.n(child_change), na.rm=TRUE))
+df %>% 
+  group_by(prime_type) %>% 
+  summarise(mean=mean(to.n(child_change), na.rm=TRUE))
+
+
 df %>% group_by(prime_type) %>% summarise(mean=mean(to.n(experimenter_change), na.rm=TRUE))
 
 ```
